@@ -1,0 +1,9 @@
+INSERT INTO `admins`(`admin_id`, `email`, `password`) VALUES ('6485cc01-307d-45d7-a3cd-f5bcdd00c4dd','phat@gmail.com','$2b$10$PFRYR55b04pGyJMi.JWXiuokYKo73OvXMXv6thf6JERVTg2q6Ju1m');
+INSERT INTO `admins`(`admin_id`, `email`, `password`) VALUES ('75d5a014-5de9-4807-b891-c77621e2c4a5','an@gmail.com','$2b$10$pQMMH79s70xxLGRIA6T0vumNju349EJ6oE7vHx8qDUQN80THOxx8W');
+
+INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('21b1fc2a-18fa-441f-85da-311f323f9c59','Xanh Navy');
+INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('23a0c1bc-c918-4360-88cb-546ee76ff72b','Xanh Ngọc');
+INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('70a68441-99b1-4dc7-8bf1-d1da9ec21599','Xanh Rêu');
+INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('969a6f4a-d76c-4e76-ab8c-55faf69b2da2','Đen');
+INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('aae15751-f71f-4b53-ae75-5c29f7338619','Xám');
+INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('ae870235-486f-42ff-8e2f-6eca0ae3f43c','Trắng');
