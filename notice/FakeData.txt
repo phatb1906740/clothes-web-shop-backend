@@ -7,3 +7,10 @@ INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('70a68441-99b1-4dc7-8b
 INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('969a6f4a-d76c-4e76-ab8c-55faf69b2da2','Đen');
 INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('aae15751-f71f-4b53-ae75-5c29f7338619','Xám');
 INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('ae870235-486f-42ff-8e2f-6eca0ae3f43c','Trắng');
+
+INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('dde75ca6-c87e-4573-9a45-1fcaac11917f','S');
+INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('39bfd719-0aa2-41c0-835a-2ceee2f4d2c2','M');
+INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('5a9b19f9-3e4d-4af8-b8fe-80d1b4313230','L');
+INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('bbece133-b96a-46fd-b89a-1ef00927b3cb','XL');
+INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('836a50e9-f6a4-412a-837c-fa46281341ff','2XL');
+INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('53f2979c-f6ec-49d9-b52b-f9b7b56ae493','3XL');
