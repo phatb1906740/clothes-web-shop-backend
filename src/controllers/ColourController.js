@@ -12,7 +12,11 @@ let create = async (req, res, next) => {
 }
 
 let list = async (req, res, next) => {
-    let colours = await Colour.findAll({ raw: true });
+    let colours = await Colour.findAll({ 
+        attributes: ['colour_id', 'colour_name'], 
+        order: [ ['created_at', 'ASC'] ], 
+        raw: true 
+    });
     return res.send(colours);
 }
 

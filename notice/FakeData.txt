@@ -1,16 +1,32 @@
 INSERT INTO `admins`(`admin_id`, `email`, `password`) VALUES ('6485cc01-307d-45d7-a3cd-f5bcdd00c4dd','phat@gmail.com','$2b$10$PFRYR55b04pGyJMi.JWXiuokYKo73OvXMXv6thf6JERVTg2q6Ju1m');
 INSERT INTO `admins`(`admin_id`, `email`, `password`) VALUES ('75d5a014-5de9-4807-b891-c77621e2c4a5','an@gmail.com','$2b$10$pQMMH79s70xxLGRIA6T0vumNju349EJ6oE7vHx8qDUQN80THOxx8W');
 
-INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('21b1fc2a-18fa-441f-85da-311f323f9c59','Xanh Navy');
-INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('23a0c1bc-c918-4360-88cb-546ee76ff72b','Xanh Ngọc');
-INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('70a68441-99b1-4dc7-8bf1-d1da9ec21599','Xanh Rêu');
-INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('969a6f4a-d76c-4e76-ab8c-55faf69b2da2','Đen');
-INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('aae15751-f71f-4b53-ae75-5c29f7338619','Xám');
-INSERT INTO `colours`(`colour_id`, `colour_name`) VALUES ('ae870235-486f-42ff-8e2f-6eca0ae3f43c','Trắng');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('10308e9a-677d-4aae-bae6-09f7d50bd854', 'Trắng', '2023-02-10 03:52:47');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('a77c66e8-6ef1-4e83-ad98-391b1716f066', 'Đen', '2023-02-10 03:52:59');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('7cc3e317-1e93-4a6e-a745-57e85518cfcd', 'Xám', '2023-02-10 03:53:11');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('a6469fdd-7339-4515-90e8-acaca6cc0c1a', 'Xám Đen', '2023-02-10 03:53:23');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('8294ed44-adc8-479f-a76f-e2f6fa1081d1', 'Xanh Đậm', '2023-02-10 03:53:35');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('0daa92c6-ea70-45ca-b57b-a8c381e6b0d2', 'Xanh Nhạt', '2023-02-10 03:53:47');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('a7b95f25-4c15-4337-8f4d-ba3d9009ce0b', 'Xanh Aqua', '2023-02-10 03:53:59');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('2dd03f83-4d6f-4872-a639-2ebae56b4987', 'Xanh Navy', '2023-02-10 03:54:10');
+INSERT INTO `colours` (`colour_id`, `colour_name`, `created_at`) VALUES ('1dd9bf35-f608-410d-9341-298d5371605f', 'Xanh Rêu', '2023-02-10 03:54:21');
 
-INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('dde75ca6-c87e-4573-9a45-1fcaac11917f','S');
-INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('39bfd719-0aa2-41c0-835a-2ceee2f4d2c2','M');
-INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('5a9b19f9-3e4d-4af8-b8fe-80d1b4313230','L');
-INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('bbece133-b96a-46fd-b89a-1ef00927b3cb','XL');
-INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('836a50e9-f6a4-412a-837c-fa46281341ff','2XL');
-INSERT INTO `sizes`(`size_id`, `size_name`) VALUES ('53f2979c-f6ec-49d9-b52b-f9b7b56ae493','3XL');
+INSERT INTO `sizes` (`size_id`, `size_name`, `created_at`) VALUES ('aeb767c7-5065-46ae-abe1-47bdbec25721', 'S', '2023-02-10 04:04:36');
+INSERT INTO `sizes` (`size_id`, `size_name`, `created_at`) VALUES ('199ea3f8-9899-42e3-a15a-75050e8243bb', 'M', '2023-02-10 04:05:04');
+INSERT INTO `sizes` (`size_id`, `size_name`, `created_at`) VALUES ('a12e4458-39f7-4bad-acc8-75d0f8dc65a1', 'L', '2023-02-10 04:05:09');
+INSERT INTO `sizes` (`size_id`, `size_name`, `created_at`) VALUES ('59684b3d-09a1-42b6-a06c-6cd49b9935f9', 'XL', '2023-02-10 04:05:14');
+INSERT INTO `sizes` (`size_id`, `size_name`, `created_at`) VALUES ('d06bb854-89b3-4dea-9a9a-88c5598ca062', '2XL', '2023-02-10 04:05:23');
+INSERT INTO `sizes` (`size_id`, `size_name`, `created_at`) VALUES ('8be44aab-ff59-4491-9fdd-4b44da1bca06', '3XL', '2023-02-10 04:05:28');
+
+INSERT INTO `categories`(`category_id`, `title`, `level`, `created_at`) VALUES ('4b1d549e-3d37-481b-b825-c08323d8a500','Áo Nam','1','2023-02-10 02:05:08');
+INSERT INTO `categories`(`category_id`, `title`, `level`, `created_at`) VALUES ('9969b4d5-ecf1-4606-95f6-870cb3129bab','Quần Nam','1','2023-02-10 02:05:23');
+INSERT INTO `categories`(`category_id`, `title`, `level`, `created_at`) VALUES ('bffd2d85-3760-48c1-b2ed-458789aaf897','Quần Lót Nam','1','2023-02-10 02:05:29');
+
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('1f9caf6c-d532-4d2c-88b1-fc13f170ce2e', 'Áo T-Shirt', '2', '4b1d549e-3d37-481b-b825-c08323d8a500', '2023-02-10 02:38:16');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('e5ddf580-f59f-40a4-ba78-6a1bd92e1053', 'Áo Polo', '2', '4b1d549e-3d37-481b-b825-c08323d8a500', '2023-02-10 02:38:24');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('1c03b3bd-47df-4359-859e-dcfeca0f8eb6', 'Áo Sơ Mi', '2', '4b1d549e-3d37-481b-b825-c08323d8a500', '2023-02-10 02:38:37');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('a9e4b45a-9d53-45be-b6f3-1248f29f6ef4', 'Quần Short', '2', '9969b4d5-ecf1-4606-95f6-870cb3129bab', '2023-02-10 02:40:00');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('adb8c34b-3259-42ff-b7c9-d8e4ddf5c377', 'Quần Jeans', '2', '9969b4d5-ecf1-4606-95f6-870cb3129bab', '2023-02-10 02:40:13');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('c0394f96-a624-4936-84eb-96620ebb54b5', 'Quần Brief (Tam Giác)', '2', 'bffd2d85-3760-48c1-b2ed-458789aaf897', '2023-02-10 02:41:25');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('9e3ec98e-d8d5-4004-9d24-a15618078f34', 'Quần Trunk (Boxer)', '2', 'bffd2d85-3760-48c1-b2ed-458789aaf897', '2023-02-10 02:41:43');
+INSERT INTO `categories` (`category_id`, `title`, `level`, `parent_id`, `created_at`) VALUES ('3ca11807-ef2b-4046-9aa8-9ae99bbc873c', 'Quần Brief Boxer (Boxer Dài)', '2', 'bffd2d85-3760-48c1-b2ed-458789aaf897', '2023-02-10 02:41:56');
