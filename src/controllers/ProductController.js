@@ -1,4 +1,9 @@
+const Product_Variant = require('../models/product_variant');
 const Product = require('../models/product');
+const Colour = require('../models/colour');
+const Size = require('../models/size');
+const Product_Variant_History = require('../models/product_variant_history');
+const Product_Image = require('../models/product_image');
 
 let create = async (req, res, next) => {
     let product_name = req.body.product_name;
@@ -17,16 +22,41 @@ let create = async (req, res, next) => {
     }
 }
 
-let listAdmin = async (req, res, next) => {
-    return res.send('listAdmin');
+let listAdminSide = async (req, res, next) => {
+    let listProductVariant = await Product_Variant.findAll({ 
+        attributes: ['product_variant_id', 'quantity', 'state', 'created_at'],
+        include: [
+            { model: Product, attributes: ['product_id'] },
+            { model: Colour, attributes: ['colour_name'] },
+            { model: Size, attributes: ['size_name'] },
+            { model: Product_Variant_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] },
+            { model: Product_Image, attributes: ['path'] },
+        ]
+     });
+    listProductVariant = listProductVariant.map((productVariant) => {
+        let newProductVariant = {
+            product_id: productVariant.Product.product_id,
+            product_variant_id: productVariant.product_variant_id,
+            product_name: productVariant.Product.product_name,
+            colour_name: productVariant.Colour.colour_name,
+            size_name: productVariant.Size.size_name,
+            product_image: productVariant.Product_Images[0].path,
+            price: productVariant.Product_Variant_Histories.price,
+            quantity: productVariant.quantity,
+            state: productVariant.state,
+            created_at: productVariant.created_at
+        }
+        return newProductVariant;
+    });
+    return res.send(listProductVariant);
 }
 
-let listCustomer = async (req, res, next) => {
+let listCustomerSide = async (req, res, next) => {
     return res.send('listCustomer');
 }
 
 module.exports = {
     create,
-    listAdmin,
-    listCustomer
+    listAdminSide,
+    listCustomerSide
 };

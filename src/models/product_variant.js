@@ -8,7 +8,7 @@ const Size = require('./size');
 const Product_Variant = sequelize.define('product_variant', {
     product_variant_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
-    state: { type: DataTypes.BOOLEAN, defaultValue: false },
+    state: { type: DataTypes.BOOLEAN, defaultValue: true },
 }, {
     timestamps : true,
     createdAt: 'created_at',

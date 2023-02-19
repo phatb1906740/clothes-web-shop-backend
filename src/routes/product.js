@@ -6,8 +6,8 @@ let router = express.Router();
 
 router.post('/create', ProductController.create);
 
-router.get('/admin/list', ProductController.listAdmin);
+router.get('/admin/list', ProductController.listAdminSide);
 
-router.get('/customer/list', ProductController.listCustomer);
+router.get('/customer/list', ProductController.listCustomerSide);
 
 module.exports = router;
