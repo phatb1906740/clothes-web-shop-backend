@@ -10,7 +10,6 @@ let create = async (req, res, next) => {
 
     try {
         let newProduct = await Product.create({ product_name, description, category_id });
-        console.log(newProduct);
         return res.send(newProduct);
     } catch(e) {
         console.log(e);

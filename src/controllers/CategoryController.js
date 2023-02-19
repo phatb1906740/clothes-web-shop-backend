@@ -30,7 +30,6 @@ let listAll = async (req, res, next) => {
     let listCategoryLevel1 = await Category.findAll({ 
         where: { parent_id: null }, 
         attributes: ['category_id', 'title'], 
-        order: [ ['created_at', 'ASC'] ],
         raw: true 
     });
     
@@ -39,7 +38,6 @@ let listAll = async (req, res, next) => {
         let listCategoryLevel2 = await Category.findAll({ 
             where: { parent_id: category_id }, 
             attributes: ['category_id', 'title'], 
-            order: [ ['created_at', 'ASC'] ],
             raw: true 
         });
         let category = { category_id, title, children: listCategoryLevel2 };
@@ -53,7 +51,6 @@ let listLevel1 = async (req, res, next) => {
     let categories = await Category.findAll({ 
         where: { parent_id: null }, 
         attributes: ['category_id', 'title'], 
-        order: [ ['created_at', 'ASC'] ],
         raw: true 
     });
     return res.send(categories);

@@ -13,8 +13,7 @@ let create = async (req, res, next) => {
 
 let list = async (req, res, next) => {
     let sizes = await Size.findAll({ 
-        attributes: ['size_id', 'size_name'], 
-        order: [ ['created_at', 'ASC'] ], 
+        attributes: ['size_id', 'size_name'],  
         raw: true 
     });
     return res.send(sizes);

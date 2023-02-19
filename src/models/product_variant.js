@@ -7,7 +7,6 @@ const Size = require('./size');
 
 const Product_Variant = sequelize.define('product_variant', {
     product_variant_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    price: { type: DataTypes.INTEGER, defaultValue: 0 },
     quantity: { type: DataTypes.INTEGER, defaultValue: 0 },
     state: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, {
@@ -19,24 +18,24 @@ const Product_Variant = sequelize.define('product_variant', {
 })
 
 Product.hasMany(Product_Variant, {
-    foreignKey: {  name: 'product_id', type: DataTypes.UUID, allowNull: false }
+    foreignKey: {  name: 'product_id', type: DataTypes.INTEGER, allowNull: false }
 });
 Product_Variant.belongsTo(Product, {
-    foreignKey: {  name: 'product_id', type: DataTypes.UUID, allowNull: false }
+    foreignKey: {  name: 'product_id', type: DataTypes.INTEGER, allowNull: false }
 });
 
 Colour.hasMany(Product_Variant, {
-  foreignKey: {  name: 'colour_id', type: DataTypes.UUID, allowNull: false }
+  foreignKey: {  name: 'colour_id', type: DataTypes.INTEGER, allowNull: false }
 });
 Product_Variant.belongsTo(Colour, {
-  foreignKey: {  name: 'colour_id', type: DataTypes.UUID, allowNull: false }
+  foreignKey: {  name: 'colour_id', type: DataTypes.INTEGER, allowNull: false }
 });
 
 Size.hasMany(Product_Variant, {
-  foreignKey: {  name: 'size_id', type: DataTypes.UUID, allowNull: false }
+  foreignKey: {  name: 'size_id', type: DataTypes.INTEGER, allowNull: false }
 });
 Product_Variant.belongsTo(Size, {
-  foreignKey: {  name: 'size_id', type: DataTypes.UUID, allowNull: false }
+  foreignKey: {  name: 'size_id', type: DataTypes.INTEGER, allowNull: false }
 });
 
 module.exports = Product_Variant;

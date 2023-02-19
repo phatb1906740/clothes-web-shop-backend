@@ -4,7 +4,7 @@ const { sequelize } = require('../configs/database');
 const Category = require('./category');
 
 const Product = sequelize.define('Product', {
-    product_id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+    product_id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     product_name: DataTypes.STRING,
     description: DataTypes.TEXT,
     rating: { type: DataTypes.FLOAT, defaultValue: 0 },
@@ -19,10 +19,10 @@ const Product = sequelize.define('Product', {
 })
 
 Category.hasMany(Product, {
-    foreignKey: {  name: 'category_id', type: DataTypes.UUID}
+    foreignKey: {  name: 'category_id', type: DataTypes.INTEGER}
   });
 Product.belongsTo(Category, {
-    foreignKey: {  name: 'category_id', type: DataTypes.UUID}
+    foreignKey: {  name: 'category_id', type: DataTypes.INTEGER}
   });
 
 module.exports = Product;
