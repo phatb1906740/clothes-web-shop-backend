@@ -26,7 +26,7 @@ let listAdminSide = async (req, res, next) => {
     let listProductVariant = await Product_Variant.findAll({ 
         attributes: ['product_variant_id', 'quantity', 'state', 'created_at'],
         include: [
-            { model: Product, attributes: ['product_id'] },
+            { model: Product, attributes: ['product_id', 'product_name'] },
             { model: Colour, attributes: ['colour_name'] },
             { model: Size, attributes: ['size_name'] },
             { model: Product_Variant_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] },
@@ -41,7 +41,7 @@ let listAdminSide = async (req, res, next) => {
             colour_name: productVariant.Colour.colour_name,
             size_name: productVariant.Size.size_name,
             product_image: productVariant.Product_Images[0].path,
-            price: productVariant.Product_Variant_Histories.price,
+            price: productVariant.Product_Variant_Histories[0].price,
             quantity: productVariant.quantity,
             state: productVariant.state,
             created_at: productVariant.created_at
