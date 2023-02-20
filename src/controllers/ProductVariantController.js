@@ -42,6 +42,73 @@ let create = async (req, res, next) => {
     })
 }
 
+let onState = async (req, res, next) => {
+    let product_variant_ids = req.body.product_variant_ids;
+    if(product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+    let numberProductVariantUpdated = await Product_Variant.update(
+        { state: true },
+        { where: { product_variant_id: product_variant_ids } }
+    )
+    return res.send(numberProductVariantUpdated)
+}
+
+let offState = async (req, res, next) => {
+    let product_variant_ids = req.body.product_variant_ids;
+    if(product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+    let numberProductVariantUpdated = await Product_Variant.update(
+        { state: false },
+        { where: { product_variant_id: product_variant_ids } }
+    )
+    return res.send(numberProductVariantUpdated)
+}
+
+let updatePrice = async (req, res, next) => {
+    let product_variant_ids = req.body.product_variant_ids;
+    if(product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+    let newPrice = req.body.price;
+    if(newPrice === undefined) return res.status(400).send('Trường price không tồn tại');
+
+    try {
+        for(let product_variant_id of product_variant_ids) {
+            let newProductVariantHistory = await Product_Variant_History.create({ 
+                product_variant_id,
+                price: newPrice
+            });
+        }
+    } catch(e) {
+        console.log(e)
+        return res.state(500).send('Có lỗi khi cập nhật giá sản phẩm vui lòng thử lại!')
+    }
+    return res.send('updatePrice')
+}
+
+let updateQuantity = async (req, res, next) => {
+    let product_variant_ids = req.body.product_variant_ids;
+    if(product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+    let newQuantity = req.body.quantity;
+    if(newQuantity === undefined) return res.status(400).send('Trường quantity không tồn tại');
+
+    let numberProductVariantUpdated = await Product_Variant.update(
+        { quantity: newQuantity },
+        { where: { product_variant_id: product_variant_ids } }
+    )
+    return res.send(numberProductVariantUpdated)
+}
+
+let deleteProductVariant = async (req, res, next) => {
+    let product_variant_ids = req.body.product_variant_ids;
+    if(product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+    await Product_Variant.destroy(
+        { where: { product_variant_id: product_variant_ids } }
+    )
+    return res.send('delete product variant success')
+}
+
 module.exports = {
     create,
+    onState,
+    offState,
+    updatePrice,
+    updateQuantity,
+    deleteProductVariant
 };
