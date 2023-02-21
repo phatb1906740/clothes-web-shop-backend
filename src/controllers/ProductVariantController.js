@@ -31,7 +31,10 @@ let create = async (req, res, next) => {
                 price: price
             });
             for (let file of files) {
-                let data = { path: file.path.slice(10,60), product_variant_id: newProductVariant.product_variant_id }
+                let data = { 
+                    path: 'http://localhost:8080\\static' + file.path.slice(10,60), 
+                    product_variant_id: newProductVariant.product_variant_id 
+                }
                 let newProductImage = await Product_Image.create(data);
             }
             return res.send(newProductVariant)
