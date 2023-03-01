@@ -1,5 +1,27 @@
-INSERT INTO `admins`(`admin_id`, `email`, `password`) VALUES ('6485cc01-307d-45d7-a3cd-f5bcdd00c4dd','phat@gmail.com','$2b$10$PFRYR55b04pGyJMi.JWXiuokYKo73OvXMXv6thf6JERVTg2q6Ju1m');
-INSERT INTO `admins`(`admin_id`, `email`, `password`) VALUES ('75d5a014-5de9-4807-b891-c77621e2c4a5','an@gmail.com','$2b$10$pQMMH79s70xxLGRIA6T0vumNju349EJ6oE7vHx8qDUQN80THOxx8W');
+INSERT INTO `roles` (`role_id`, `role_name`) VALUES (NULL, 'admin');
+INSERT INTO `roles` (`role_id`, `role_name`) VALUES (NULL, 'customer');
+
+INSERT INTO `users` (`user_id`, `email`, `password`, `role_id`) VALUES
+('14f40b93-5f1e-459f-b2ea-fa72ce724fc8', 'hung@gmail.com', '$2b$10$oC7gN6VwK1kEEWAgKApuTOinjTHqf/OSysOhU96nEwhS.8BBx37VO', 2),
+('1ca2f9f9-6f0a-4bb1-b404-bfca5d900c6c', 'minh@gmail.com', '$2b$10$wbiTajwynughf0pBJv97b.tByg4SVWDIstXZXttKyHLmIRYB275lC', 2),
+('48dc67cb-4f4b-451a-858d-ab4871a74ce8', 'duy@gmail.com', '$2b$10$5GVDobChG8UQomWlN28N/uUT8RgVtzJQBI6QXjFETE/eIPhp/p06e', 2),
+('57344864-8985-42bf-92d5-b60751df65ff', 'khoa@gmail.com', '$2b$10$ZwWtuMG6GbGioKK4QlG.SeELNk5YdhfdIpm5/inZIRTvETeoBADf2', 2),
+('8122d05f-513a-4b12-bd99-1b4e34ef8f3e', 'trong@gmail.com', '$2b$10$9G9lh4Ii1T7MyB/JuEkG9uNqSaZcalS5tQrTPfu45NynMZDDOD/56', 2),
+('8d097ddc-c9a2-4c0a-8e60-bdc7c115d519', 'danh@gmail.com', '$2b$10$ZKWWd50RKECq3a8j.b0fn.CWeMjVwYnryETfHWV6TVKZeiEH3CtxS', 2),
+('9a2d12e6-0990-48e7-9f9a-98ffa7fc7768', 'an@gmail.com', '$2b$10$M.7KB8pIVdmU3FLWYvVJh.hq62XVDVr.gujPYBq9lyEdyXrOx4yQC', 1),
+('ac0df2ff-dded-49bc-9c2c-da8ebe204296', 'phat@gmail.com', '$2b$10$Xxwnl35b0T1BBJ5dOaZ/pedV4.qosesOldtUEDSJUrRCiPHatrQ7e', 1),
+('e1e3af7e-5ea7-4f6d-b488-0feb60d8e5c0', 'tin@gmail.com', '$2b$10$8skwyL4IXIy2V80MiaZ2AOtC9fKxMWUAwc/MzeO647VR4g6sUcRF6', 2),
+('fae061a3-29eb-4295-9bd5-0f7b4dc8747b', 'huu@gmail.com', '$2b$10$Vnf66uUglVnu3rhAQMWC1O/ZE3a/0atNaEEQ.9TP4SrDh52NLLAhy', 2);
+
+INSERT INTO `customer_infos` (`customer_info_id`, `customer_name`, `phone_number`, `address`, `user_id`) VALUES
+(1, 'Nguyễn Thanh Danh', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', '8d097ddc-c9a2-4c0a-8e60-bdc7c115d519'),
+(2, 'Nguyễn Trần Quốc Duy', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', '48dc67cb-4f4b-451a-858d-ab4871a74ce8'),
+(3, 'Trần Đình Hưng', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', '14f40b93-5f1e-459f-b2ea-fa72ce724fc8'),
+(4, 'Hứa Tuấn Hữu', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 'fae061a3-29eb-4295-9bd5-0f7b4dc8747b'),
+(5, 'Võ Tiến Khoa', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', '57344864-8985-42bf-92d5-b60751df65ff'),
+(6, 'Vũ Đức Minh', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', '1ca2f9f9-6f0a-4bb1-b404-bfca5d900c6c'),
+(7, 'Vương Trung Tín', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 'e1e3af7e-5ea7-4f6d-b488-0feb60d8e5c0'),
+(8, 'Lý Hùng Trọng', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', '8122d05f-513a-4b12-bd99-1b4e34ef8f3e');
 
 INSERT INTO `colours` (`colour_id`, `colour_name`) VALUES (NULL, 'Trắng');
 INSERT INTO `colours` (`colour_id`, `colour_name`) VALUES (NULL, 'Đen');
