@@ -1,13 +1,14 @@
 const Product_Variant = require('../models/product_variant');
 const Product_Image = require('../models/product_image');
-const Product_Variant_History = require('../models/product_variant_history');
+const Product_Price_History = require('../models/product_price_history');
 const uploadImage = require('../midlewares/uploadImage');
 
 let create = async (req, res, next) => {
     uploadImage(req, res, async (err) => {
-        if (err) return res.status(400).send(err);
-        let price = parseInt(req.body.price);
-        if (price === undefined) return res.status(400).send('Trường price không tồn tại');
+        if (err) {
+            console.log(err);
+            return res.status(400).send(err);
+        }
         let quantity = parseInt(req.body.quantity);
         if (quantity === undefined) return res.status(400).send('Trường quantity không tồn tại');
         let product_id = parseInt(req.body.product_id);
@@ -20,16 +21,13 @@ let create = async (req, res, next) => {
         if (files === undefined) return res.status(400).send('Trường files không tồn tại');
 
         try {
-            let newProductVariant = await Product_Variant.create({
+            let data = {
                 quantity,
                 product_id,
                 colour_id,
                 size_id
-            });
-            let newProductVariantHistory = await Product_Variant_History.create({
-                product_variant_id: newProductVariant.product_variant_id,
-                price: price
-            });
+            };
+            let newProductVariant = await Product_Variant.create(data);
             for (let file of files) {
                 let data = {
                     path: 'http://localhost:8080\\static' + file.path.slice(10, 60),
@@ -38,8 +36,8 @@ let create = async (req, res, next) => {
                 let newProductImage = await Product_Image.create(data);
             }
             return res.send(newProductVariant)
-        } catch (e) {
-            console.log(e);
+        } catch (err) {
+            console.log(err);
             return res.status(500).send(e);
         }
     })

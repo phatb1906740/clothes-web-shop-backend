@@ -1,8 +1,10 @@
+const { Op } = require("sequelize");
+
 const Product_Variant = require('../models/product_variant');
 const Product = require('../models/product');
 const Colour = require('../models/colour');
 const Size = require('../models/size');
-const Product_Variant_History = require('../models/product_variant_history');
+const Product_Price_History = require('../models/product_price_history');
 const Product_Image = require('../models/product_image');
 
 let create = async (req, res, next) => {
@@ -10,11 +12,17 @@ let create = async (req, res, next) => {
     if(product_name === undefined) return res.status(400).send('Trường product_name không tồn tại');
     let category_id = req.body.category_id;
     if(category_id === undefined) return res.status(400).send('Trường category_id không tồn tại');
+    let price = parseInt(req.body.price);
+    if (price === undefined) return res.status(400).send('Trường price không tồn tại');
     let description = req.body.description;
     if(description === undefined) return res.status(400).send('Trường description không tồn tại');
 
     try {
         let newProduct = await Product.create({ product_name, description, category_id });
+        let newProductPriceHistory = await Product_Price_History.create({
+            product_id: newProduct.product_id,
+            price: price
+        });
         return res.send(newProduct);
     } catch(e) {
         console.log(e);
@@ -26,12 +34,15 @@ let listAdminSide = async (req, res, next) => {
     let listProductVariant = await Product_Variant.findAll({ 
         attributes: ['product_variant_id', 'quantity', 'state', 'created_at'],
         include: [
-            { model: Product, attributes: ['product_id', 'product_name'] },
+            {
+                model: Product, attributes: ['product_id', 'product_name'], 
+                include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] }
+            },
             { model: Colour, attributes: ['colour_name'] },
             { model: Size, attributes: ['size_name'] },
-            { model: Product_Variant_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] },
             { model: Product_Image, attributes: ['path'] },
-        ]
+        ],
+        order: [ ['created_at', 'DESC'] ]
      });
     listProductVariant = listProductVariant.map((productVariant) => {
         let newProductVariant = {
@@ -41,7 +52,7 @@ let listAdminSide = async (req, res, next) => {
             colour_name: productVariant.Colour.colour_name,
             size_name: productVariant.Size.size_name,
             product_image: productVariant.Product_Images[0].path,
-            price: productVariant.Product_Variant_Histories[0].price,
+            price: productVariant.Product.Product_Price_Histories[0].price,
             quantity: productVariant.quantity,
             state: productVariant.state,
             created_at: productVariant.created_at
@@ -77,13 +88,23 @@ let listCustomerSide = async (req, res, next) => {
                 let listProductVariantSameColour = await Product_Variant.findAll({
                     attributes: ['product_variant_id', 'colour_id'],
                     include: [
-                        { model: Product, attributes: ['product_id', 'product_name', 'rating', 'sold', 'feedback_quantity'] },
+                        { 
+                            model: Product, attributes: ['product_id', 'product_name', 'rating', 'sold', 'feedback_quantity'],
+                            include: {
+                                model: Product_Price_History, 
+                                attributes: ['price'], 
+                                separate: true, order: [ ['createdAt', 'DESC'] ]
+                            }
+                        },
                         { model: Colour, attributes: ['colour_name'] },
                         { model: Size, attributes: ['size_name'] },
-                        { model: Product_Variant_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] },
                         { model: Product_Image, attributes: ['path'] },
                     ],
-                    where: { colour_id },
+                    where: { [Op.and]: [
+                        { colour_id },
+                        { state: true },
+                        { quantity: { [Op.gt]: 0 } } 
+                    ] },
                 });
                 // Convert dữ liệu
                 let productVariant = {
@@ -95,7 +116,7 @@ let listCustomerSide = async (req, res, next) => {
                     product_variant_id: listProductVariantSameColour[0].product_variant_id,
                     colour_id: listProductVariantSameColour[0].colour_id,
                     colour_name: listProductVariantSameColour[0].Colour.colour_name,
-                    price: listProductVariantSameColour[0].Product_Variant_Histories[0].price,
+                    price: listProductVariantSameColour[0].Product.Product_Price_Histories[0].price,
                     product_image: listProductVariantSameColour[0].Product_Images[0].path,
                     sizes: []
                 };
