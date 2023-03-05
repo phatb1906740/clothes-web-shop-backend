@@ -133,8 +133,87 @@ let listCustomerSide = async (req, res, next) => {
     }
 }
 
+let detailCustomerSide = async (req, res, next) => {
+    let product_id = req.params.product_id;
+    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+
+    try {
+        let productDetail = await Product.findOne({ 
+            attributes: ['product_id', 'product_name', 'description', 'rating', 'sold', 'feedback_quantity'],
+            where: { product_id },
+            raw: true
+        });
+        return res.send(productDetail);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+}
+
+let listColour = async (req, res, next) => {
+    let product_id = req.params.product_id;
+    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+
+    try {
+        let listColour = await Product_Variant.findAll({
+            attributes: ['colour_id'],
+            include: [
+                { model: Colour, attributes: ['colour_name'] },
+            ],
+            where: { product_id },
+            group: [ 'colour_id' ],
+        });
+    
+        listColour = listColour.map((colour) => {
+            let newColour = {
+                colour_id: colour.colour_id,
+                colour_name: colour.Colour.colour_name
+            }
+            return newColour;
+        });
+    
+        return res.send(listColour);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+}
+
+let listSize = async (req, res, next) => {
+    let product_id = req.params.product_id;
+    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+    let colour_id = req.params.colour_id;
+    if(colour_id === undefined) return res.status(400).send('Trường colour_id không tồn tại');
+
+    try {
+        let listSize = await Product_Variant.findAll({
+            attributes: ['size_id'],
+            include: [
+                { model: Size, attributes: ['size_name'] },
+            ],
+            where: { product_id, colour_id, state: true },
+        });
+    
+        listSize = listSize.map((size) => {
+            let newSize = {
+                size_id: size.size_id,
+                size_name: size.Size.size_name
+            }
+            return newSize;
+        });
+    
+        return res.send(listSize);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+}
+
 module.exports = {
     create,
     listAdminSide,
-    listCustomerSide
+    listCustomerSide,
+    detailCustomerSide,
+    listColour,
+    listSize
 };

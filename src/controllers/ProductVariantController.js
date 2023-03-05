@@ -1,3 +1,4 @@
+const Product = require('../models/product');
 const Product_Variant = require('../models/product_variant');
 const Product_Image = require('../models/product_image');
 const Product_Price_History = require('../models/product_price_history');
@@ -106,11 +107,50 @@ let deleteProductVariant = async (req, res, next) => {
     return res.send('delete product variant success')
 }
 
+let detailCustomerSide = async (req, res, next) => {
+    let product_id = req.params.product_id;
+    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+    let colour_id = req.params.colour_id;
+    if(colour_id === undefined) return res.status(400).send('Trường colour_id không tồn tại');
+    let size_id = req.params.size_id;
+    if(size_id === undefined) return res.status(400).send('Trường size_id không tồn tại');
+
+    try {
+        let productVariant = await Product_Variant.findOne({
+            attributes: ['product_variant_id', 'quantity'],
+            include: [
+                {
+                    model: Product, attributes: [], 
+                    include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] }
+                },
+                { model: Product_Image, attributes: ['path'] },
+            ],
+            where: { product_id, colour_id, size_id, state: true },
+        });
+    
+        let newProductVariant = {
+            product_variant_id: productVariant.product_variant_id,
+            quantity: productVariant.quantity,
+            product_images: []
+        };
+    
+        for (let image of productVariant.Product_Images) {
+            newProductVariant.product_images.push(image.path);
+        }
+    
+        return res.send(newProductVariant);
+    } catch(err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+}
+
 module.exports = {
     create,
     onState,
     offState,
     updatePrice,
     updateQuantity,
-    deleteProductVariant
+    deleteProductVariant,
+    detailCustomerSide
 };
