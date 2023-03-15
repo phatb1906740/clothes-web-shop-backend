@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 
-const db = require('./src/configs/database');
-const setRouter = require('./src/routes/index');
+const db = require('./configs/database');
+const setRouter = require('./routes/index');
 
 const server = express();
 const port = 8080;

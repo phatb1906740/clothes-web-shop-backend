@@ -7,8 +7,9 @@ const sizeRouter = require('./size');
 const categoryRouter = require('./category');
 const productRouter = require('./product');
 const product_variantRouter = require('./product_variant');
+const order = require('./order');
 
-function setRoute (server) {
+function setRoute(server) {
 
     server.use('/api/admin', adminRouter);
 
@@ -23,6 +24,8 @@ function setRoute (server) {
     server.use('/api/product', productRouter);
 
     server.use('/api/product-variant', product_variantRouter);
+
+    server.use('/api/order', order);
 
 }
 
