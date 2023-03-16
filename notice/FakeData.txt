@@ -161,3 +161,33 @@ INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('3','Đang Vận Ch
 INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('4','Đã Giao');
 INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('5','Đã Hủy');
 INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('6','Hủy Bởi Shop');
+
+INSERT INTO `orders` (`order_id`, `customer_name`, `email`, `phone_number`, `address`, `total_product_value`, `delivery_charges`, `total_order_value`, `user_id`) VALUES
+('71852912157786', 'Vương Trung Tín', 'tin@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, 'e1e3af7e-5ea7-4f6d-b488-0feb60d8e5c0'),
+('71852912205857', 'Vương Trung Tín', 'tin@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, 'e1e3af7e-5ea7-4f6d-b488-0feb60d8e5c0'),
+('71852912226347', 'Vương Trung Tín', 'tin@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, 'e1e3af7e-5ea7-4f6d-b488-0feb60d8e5c0'),
+('71852987216501', 'Nguyễn Thanh Danh', 'danh@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, '8d097ddc-c9a2-4c0a-8e60-bdc7c115d519'),
+('71852987268026', 'Nguyễn Thanh Danh', 'danh@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, '8d097ddc-c9a2-4c0a-8e60-bdc7c115d519'),
+('71852987278236', 'Nguyễn Thanh Danh', 'danh@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, '8d097ddc-c9a2-4c0a-8e60-bdc7c115d519');
+
+INSERT INTO `order_items` (`order_id`, `product_variant_id`, `order_item_index`, `price`, `quantity`, `total_value`) VALUES
+('71852912157786', 3, 0, 179000, 2, 358000),
+('71852912157786', 19, 1, 599000, 1, 599000),
+('71852912205857', 3, 0, 179000, 2, 358000),
+('71852912205857', 19, 1, 599000, 1, 599000),
+('71852912226347', 3, 0, 179000, 2, 358000),
+('71852912226347', 19, 1, 599000, 1, 599000),
+('71852987216501', 3, 0, 179000, 2, 358000),
+('71852987216501', 19, 1, 599000, 1, 599000),
+('71852987268026', 3, 0, 179000, 2, 358000),
+('71852987268026', 19, 1, 599000, 1, 599000),
+('71852987278236', 3, 0, 179000, 2, 358000),
+('71852987278236', 19, 1, 599000, 1, 599000);
+
+INSERT INTO `order_status_change_histories` (`order_id`, `state_id`, `created_at`) VALUES
+('71852912157786', 1, '2023-03-16 03:22:48'),
+('71852912205857', 1, '2023-03-16 03:23:13'),
+('71852912226347', 1, '2023-03-16 03:23:19'),
+('71852987216501', 1, '2023-03-16 03:26:36'),
+('71852987268026', 1, '2023-03-16 03:26:34'),
+('71852987278236', 1, '2023-03-16 03:26:32');
