@@ -91,6 +91,29 @@ let create = async (req, res, next) => {
     }
 }
 
+let listAdminSide = async (req, res, next) => {
+    let orderList = await Order.findAll({
+        attributes: ['order_id', 'total_order_value'],
+        include: [
+            {
+                model: Order_State
+            },
+        ],
+    });
+    orderList = orderList.map((order) => {
+        let newOrder = {
+            order_id: order.order_id,
+            total_order_value: order.total_order_value,
+            state: order.Order_States[0].state_name,
+            created_at: order.Order_States[0].Order_Status_Change_History.created_at
+        }
+        return newOrder;
+    });
+
+    return res.send(orderList);
+}
+
 module.exports = {
     create,
+    listAdminSide
 }
