@@ -92,28 +92,123 @@ let create = async (req, res, next) => {
 }
 
 let listAdminSide = async (req, res, next) => {
-    let orderList = await Order.findAll({
-        attributes: ['order_id', 'total_order_value'],
-        include: [
-            {
-                model: Order_State
-            },
-        ],
-    });
-    orderList = orderList.map((order) => {
-        let newOrder = {
-            order_id: order.order_id,
-            total_order_value: order.total_order_value,
-            state: order.Order_States[0].state_name,
-            created_at: order.Order_States[0].Order_Status_Change_History.created_at
-        }
-        return newOrder;
-    });
+    try {
+        let orderList = await Order.findAll({
+            attributes: ['order_id', 'total_order_value'],
+            include: [
+                {
+                    model: Order_Status_Change_History, separate: true, order: [['created_at', 'DESC']],
+                    include: { model: Order_State, attributes: ['state_name'], }
+                },
+            ],
+        });
+        orderList = orderList.map((order) => {
+            let newOrder = {
+                order_id: order.order_id,
+                total_order_value: order.total_order_value,
+                state_id: order.Order_Status_Change_Histories[0].state_id,
+                state_name: order.Order_Status_Change_Histories[0].Order_State.state_name,
+                created_at: order.Order_Status_Change_Histories[0].created_at
+            }
+            return newOrder;
+        });
 
-    return res.send(orderList);
+        return res.send(orderList);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+
+    }
+}
+
+let changeStatus = async (req, res, next) => {
+    let order_id = req.params.order_id;
+    if (order_id === undefined) return res.status(400).send('Trường order_id không tồn tại');
+    let state_id = req.params.state_id;
+    if (state_id === undefined) return res.status(400).send('Trường state_id không tồn tại');
+    let order;
+    try {
+        order = await Order.findOne({ where: { order_id } });
+        if (order == null) return res.status(400).send('Order này không tồn tại');
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tạo đơn hàng vui lòng thử lại');
+    }
+
+    try {
+        // Xử lý chuyển đơn hàng sang trạng thái "Đã xác nhận"
+        if (state_id == 2) {
+            let stateList = await order.getOrder_Status_Change_Histories();
+            const even = (state) => state.state_id == 1;
+            // Kiểm tra xem đơn hàng có tồn tại trạng thái "Chờ xác nhận" hay không?
+            if (stateList.some(even)) {
+                let state = await Order_State.findOne({ where: { state_id: 2 } });
+                let newState = await order.addOrder_State(state);
+                return res.send(newState);
+            } else return res.send("Đơn hàng không hợp lệ");
+        }
+
+        // Xử lý chuyển đơn hàng sang trạng thái "Đang vận chuyển"
+        if (state_id == 3) {
+            let stateList = await order.getOrder_Status_Change_Histories();
+            const even = (state) => state.state_id == 2;
+            // Kiểm tra xem đơn hàng có tồn tại trạng thái "Đã xác nhận" hay không?
+            if (stateList.some(even)) {
+                let state = await Order_State.findOne({ where: { state_id: 3 } });
+                let newState = await order.addOrder_State(state);
+                return res.send(newState);
+            } else return res.send("Đơn hàng không hợp lệ");
+        }
+
+        // Xử lý chuyển đơn hàng sang trạng thái "Đã giao"
+        if (state_id == 4) {
+            let stateList = await order.getOrder_Status_Change_Histories();
+            const even = (state) => state.state_id == 3;
+            // Kiểm tra xem đơn hàng có tồn tại trạng thái "Đang vận chuyển" hay không?
+            if (stateList.some(even)) {
+                let state = await Order_State.findOne({ where: { state_id: 4 } });
+                let newState = await order.addOrder_State(state);
+                return res.send(newState);
+            } else return res.send("Đơn hàng không hợp lệ");
+        }
+
+        // Xử lý chuyển đơn hàng sang trạng thái "Đã hủy"
+        if (state_id == 5) {
+            let stateList = await order.getOrder_Status_Change_Histories();
+            const even = (state) => state.state_id == 1;
+            const lastIndex = stateList.length - 1;
+            // Kiểm tra xem đơn hàng có tồn tại trạng thái "Chờ xác nhận" và 
+            // không có trạng thái "Đã giao" và "Hủy bởi shop" là trạng thái cuối cùng hay không?
+            if (stateList.some(even) && stateList[lastIndex].state_id != 4 && stateList[lastIndex].state_id != 6) {
+                let state = await Order_State.findOne({ where: { state_id: 5 } });
+                let newState = await order.addOrder_State(state);
+                return res.send(newState);
+            } else return res.send("Đơn hàng không hợp lệ");
+        }
+
+        // Xử lý chuyển đơn hàng sang trạng thái "Hủy bởi shop"
+        if (state_id == 6) {
+            let stateList = await order.getOrder_Status_Change_Histories();
+            const even = (state) => state.state_id == 1;
+            const lastIndex = stateList.length - 1;
+            // Kiểm tra xem đơn hàng có tồn tại trạng thái "Chờ xác nhận" và 
+            // không có trạng thái "Đã giao" và "Đã hủy" là trạng thái cuối cùng hay không?
+            if (stateList.some(even) && stateList[lastIndex].state_id != 4 && stateList[lastIndex].state_id != 5) {
+                let state = await Order_State.findOne({ where: { state_id: 6 } });
+                let newState = await order.addOrder_State(state);
+                return res.send(newState);
+            } else return res.send("Đơn hàng không hợp lệ");
+        }
+
+        res.send("state_id không hợp lệ");
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
 }
 
 module.exports = {
     create,
-    listAdminSide
+    listAdminSide,
+    changeStatus
 }
