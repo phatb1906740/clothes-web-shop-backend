@@ -9,13 +9,13 @@ const Product_Image = require('../models/product_image');
 
 let create = async (req, res, next) => {
     let product_name = req.body.product_name;
-    if(product_name === undefined) return res.status(400).send('Trường product_name không tồn tại');
+    if (product_name === undefined) return res.status(400).send('Trường product_name không tồn tại');
     let category_id = req.body.category_id;
-    if(category_id === undefined) return res.status(400).send('Trường category_id không tồn tại');
+    if (category_id === undefined) return res.status(400).send('Trường category_id không tồn tại');
     let price = parseInt(req.body.price);
     if (price === undefined) return res.status(400).send('Trường price không tồn tại');
     let description = req.body.description;
-    if(description === undefined) return res.status(400).send('Trường description không tồn tại');
+    if (description === undefined) return res.status(400).send('Trường description không tồn tại');
 
     try {
         let newProduct = await Product.create({ product_name, description, category_id });
@@ -24,26 +24,26 @@ let create = async (req, res, next) => {
             price: price
         });
         return res.send(newProduct);
-    } catch(e) {
+    } catch (e) {
         console.log(e);
         return res.status(500).send(e);
     }
 }
 
 let listAdminSide = async (req, res, next) => {
-    let listProductVariant = await Product_Variant.findAll({ 
+    let listProductVariant = await Product_Variant.findAll({
         attributes: ['product_variant_id', 'quantity', 'state', 'created_at'],
         include: [
             {
-                model: Product, attributes: ['product_id', 'product_name'], 
-                include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [ ['createdAt', 'DESC'] ] }
+                model: Product, attributes: ['product_id', 'product_name'],
+                include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['createdAt', 'DESC']] }
             },
             { model: Colour, attributes: ['colour_name'] },
             { model: Size, attributes: ['size_name'] },
             { model: Product_Image, attributes: ['path'] },
         ],
-        order: [ ['created_at', 'DESC'] ]
-     });
+        order: [['created_at', 'DESC']]
+    });
     listProductVariant = listProductVariant.map((productVariant) => {
         let newProductVariant = {
             product_id: productVariant.Product.product_id,
@@ -65,69 +65,73 @@ let listAdminSide = async (req, res, next) => {
 let listCustomerSide = async (req, res, next) => {
     try {
         // Lấy danh sách tất cả sản phẩm ưu tiên sản phẩm mới nhất
-        let listProduct = await Product.findAll({ 
+        let listProduct = await Product.findAll({
             attributes: ['product_id'],
-            order: [ ['created_at', 'DESC'] ],
+            order: [['created_at', 'DESC']],
             raw: true
         });
 
         let listProductVariant = [];
 
         // Duyệt qua danh sách sản phẩm
-        for( let { product_id } of listProduct ) {
+        for (let { product_id } of listProduct) {
             // Lấy danh sách tất cả các màu của sản phẩm đó
             let listColor = await Product_Variant.findAll({
                 attributes: ['colour_id'],
                 where: { product_id },
-                group: [ 'colour_id' ],
+                group: ['colour_id'],
                 raw: true
             });
             // Duyệt qua danh sách màu
-            for( let { colour_id } of listColor ) {
+            for (let { colour_id } of listColor) {
                 // Tìm tất cả biến thể sản phẩm có cùng màu với nhau
                 let listProductVariantSameColour = await Product_Variant.findAll({
                     attributes: ['product_variant_id', 'colour_id'],
                     include: [
-                        { 
+                        {
                             model: Product, attributes: ['product_id', 'product_name', 'rating', 'sold', 'feedback_quantity'],
                             include: {
-                                model: Product_Price_History, 
-                                attributes: ['price'], 
-                                separate: true, order: [ ['createdAt', 'DESC'] ]
+                                model: Product_Price_History,
+                                attributes: ['price'],
+                                separate: true, order: [['createdAt', 'DESC']]
                             }
                         },
                         { model: Colour, attributes: ['colour_name'] },
                         { model: Size, attributes: ['size_name'] },
                         { model: Product_Image, attributes: ['path'] },
                     ],
-                    where: { [Op.and]: [
-                        { colour_id },
-                        { state: true },
-                        { quantity: { [Op.gt]: 0 } } 
-                    ] },
+                    where: {
+                        [Op.and]: [
+                            { colour_id },
+                            { state: true },
+                            { quantity: { [Op.gt]: 0 } }
+                        ]
+                    },
                 });
                 // Convert dữ liệu
-                let productVariant = {
-                    product_id: listProductVariantSameColour[0].Product.product_id,
-                    product_name: listProductVariantSameColour[0].Product.product_name,
-                    rating: listProductVariantSameColour[0].Product.rating,
-                    sold: listProductVariantSameColour[0].Product.sold,
-                    feedback_quantity: listProductVariantSameColour[0].Product.feedback_quantity,
-                    product_variant_id: listProductVariantSameColour[0].product_variant_id,
-                    colour_id: listProductVariantSameColour[0].colour_id,
-                    colour_name: listProductVariantSameColour[0].Colour.colour_name,
-                    price: listProductVariantSameColour[0].Product.Product_Price_Histories[0].price,
-                    product_image: listProductVariantSameColour[0].Product_Images[0].path,
-                    sizes: []
-                };
-                // Duyệt qua danh sách biến thể sản phẩm có cùng màu để cộng dồn danh sách sizes
-                for( let { Size } of listProductVariantSameColour )
-                    productVariant.sizes.push(Size.size_name);
-                listProductVariant.push(productVariant);
+                if (listProductVariantSameColour.length) {
+                    let productVariant = {
+                        product_id: listProductVariantSameColour[0].Product.product_id,
+                        product_name: listProductVariantSameColour[0].Product.product_name,
+                        rating: listProductVariantSameColour[0].Product.rating,
+                        sold: listProductVariantSameColour[0].Product.sold,
+                        feedback_quantity: listProductVariantSameColour[0].Product.feedback_quantity,
+                        product_variant_id: listProductVariantSameColour[0].product_variant_id,
+                        colour_id: listProductVariantSameColour[0].colour_id,
+                        colour_name: listProductVariantSameColour[0].Colour.colour_name,
+                        price: listProductVariantSameColour[0].Product.Product_Price_Histories[0].price,
+                        product_image: listProductVariantSameColour[0].Product_Images[0].path,
+                        sizes: []
+                    };
+                    // Duyệt qua danh sách biến thể sản phẩm có cùng màu để cộng dồn danh sách sizes
+                    for (let { Size } of listProductVariantSameColour)
+                        productVariant.sizes.push(Size.size_name);
+                    listProductVariant.push(productVariant);
+                }
             }
         }
         return res.send(listProductVariant);
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
     }
@@ -135,16 +139,16 @@ let listCustomerSide = async (req, res, next) => {
 
 let detailCustomerSide = async (req, res, next) => {
     let product_id = req.params.product_id;
-    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+    if (product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
 
     try {
-        let productDetail = await Product.findOne({ 
+        let productDetail = await Product.findOne({
             attributes: ['product_id', 'product_name', 'description', 'rating', 'sold', 'feedback_quantity'],
             where: { product_id },
             raw: true
         });
         return res.send(productDetail);
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
     }
@@ -152,7 +156,7 @@ let detailCustomerSide = async (req, res, next) => {
 
 let listColour = async (req, res, next) => {
     let product_id = req.params.product_id;
-    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+    if (product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
 
     try {
         let listColour = await Product_Variant.findAll({
@@ -161,9 +165,9 @@ let listColour = async (req, res, next) => {
                 { model: Colour, attributes: ['colour_name'] },
             ],
             where: { product_id },
-            group: [ 'colour_id' ],
+            group: ['colour_id'],
         });
-    
+
         listColour = listColour.map((colour) => {
             let newColour = {
                 colour_id: colour.colour_id,
@@ -171,9 +175,9 @@ let listColour = async (req, res, next) => {
             }
             return newColour;
         });
-    
+
         return res.send(listColour);
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
     }
@@ -181,9 +185,9 @@ let listColour = async (req, res, next) => {
 
 let listSize = async (req, res, next) => {
     let product_id = req.params.product_id;
-    if(product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+    if (product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
     let colour_id = req.params.colour_id;
-    if(colour_id === undefined) return res.status(400).send('Trường colour_id không tồn tại');
+    if (colour_id === undefined) return res.status(400).send('Trường colour_id không tồn tại');
 
     try {
         let listSize = await Product_Variant.findAll({
@@ -193,7 +197,7 @@ let listSize = async (req, res, next) => {
             ],
             where: { product_id, colour_id, state: true },
         });
-    
+
         listSize = listSize.map((size) => {
             let newSize = {
                 size_id: size.size_id,
@@ -201,9 +205,9 @@ let listSize = async (req, res, next) => {
             }
             return newSize;
         });
-    
+
         return res.send(listSize);
-    } catch(err) {
+    } catch (err) {
         console.log(err);
         return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
     }
