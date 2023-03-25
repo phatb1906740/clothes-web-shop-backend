@@ -7,6 +7,7 @@ const Product_Variant = require('../models/product_variant');
 const Product = require('../models/product');
 const Product_Price_History = require('../models/product_price_history');
 const Order_Item = require('../models/order_item');
+const Feedback = require('../models/feedback');
 const Order_Status_Change_History = require('../models/order_status_change_history');
 
 let create = async (req, res, next) => {
@@ -97,21 +98,26 @@ let listAdminSide = async (req, res, next) => {
             attributes: ['order_id', 'total_order_value'],
             include: [
                 {
-                    model: Order_Status_Change_History, separate: true, order: [['created_at', 'DESC']],
-                    include: { model: Order_State, attributes: ['state_name'], }
+                    model: Order_Status_Change_History, where: { state_id: 1 }
                 },
             ],
+            order: [
+                [Order_Status_Change_History, 'created_at', 'DESC']
+            ]
         });
-        orderList = orderList.map((order) => {
+
+        orderList = await Promise.all(orderList.map(async (order) => {
+            let stateList = await order.getOrder_States()
+            let state = stateList.pop()
             let newOrder = {
                 order_id: order.order_id,
                 total_order_value: order.total_order_value,
-                state_id: order.Order_Status_Change_Histories[0].state_id,
-                state_name: order.Order_Status_Change_Histories[0].Order_State.state_name,
+                state_id: state.state_id,
+                state_name: state.state_name,
                 created_at: order.Order_Status_Change_Histories[0].created_at
             }
             return newOrder;
-        });
+        }));
 
         return res.send(orderList);
     } catch (err) {
@@ -166,6 +172,14 @@ let changeStatus = async (req, res, next) => {
             const even = (state) => state.state_id == 3;
             // Kiểm tra xem đơn hàng có tồn tại trạng thái "Đang vận chuyển" hay không?
             if (stateList.some(even)) {
+                let productVariantList = await order.getProduct_variants();
+                for (let productVariant of productVariantList) {
+                    let product = await productVariant.getProduct();
+                    let oldSold = product.sold;
+                    let quantity = productVariant.Order_Item.quantity;
+                    let newSold = oldSold + quantity;
+                    await product.update({ sold: newSold })
+                }
                 let state = await Order_State.findOne({ where: { state_id: 4 } });
                 let newState = await order.addOrder_State(state);
                 return res.send(newState);
