@@ -127,7 +127,7 @@ let listAdminSide = async (req, res, next) => {
     }
 }
 
-let listCustomer = async (req, res, next) => {
+let listCustomerSide = async (req, res, next) => {
     let customer_id = req.params.customer_id;
     if (customer_id === undefined) return res.status(400).send('Trường customer_id không tồn tại');
     try {
@@ -196,6 +196,67 @@ let listCustomer = async (req, res, next) => {
         return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
 
     }
+}
+
+let detailCustomerSide = async (req, res, next) => {
+    let customer_id = req.params.customer_id;
+    if (customer_id === undefined) return res.status(400).send('Trường customer_id không tồn tại');
+    try {
+        let customer = await User.findOne({ where: { user_id: customer_id, role_id: 2 } });
+        if (customer == null) return res.status(400).send('User này không tồn tại');
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+
+    let order_id = req.params.order_id;
+    if (order_id === undefined) return res.status(400).send('Trường order_id không tồn tại');
+    let order;
+    try {
+        order = await Order.findOne({ where: { order_id, user_id: customer_id } });
+        if (order == null) return res.status(400).send('Order này không tồn tại');
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+
+    let stateList = await order.getOrder_States()
+    let created_at = stateList[0].Order_Status_Change_History.created_at;
+    let state = stateList.pop()
+
+    let productVariantList = await order.getProduct_variants();
+    let orderItemList = [];
+    for (let productVariant of productVariantList) {
+        let product = await productVariant.getProduct();
+        let colour = await productVariant.getColour();
+        let size = await productVariant.getSize();
+        let productVariantConverted = {
+            name: product.product_name,
+            quantity: productVariant.Order_Item.quantity,
+            price: productVariant.Order_Item.price,
+            colour: colour.colour_name,
+            size: size.size_name,
+            total_value: productVariant.Order_Item.total_value
+        }
+        orderItemList.push(productVariantConverted);
+    }
+
+    let orderConverted = {
+        order_id: order.order_id,
+        state_id: state.state_id,
+        state_name: state.state_name,
+        created_at,
+        order_items: orderItemList,
+        total_product_value: order.total_product_value,
+        delivery_charges: order.delivery_charges,
+        total_order_value: order.total_order_value,
+        customer_name: order.customer_name,
+        email: order.email,
+        phone_number: order.phone_number,
+        address: order.address
+    }
+
+    return res.send(orderConverted);
 }
 
 let changeStatus = async (req, res, next) => {
@@ -295,6 +356,7 @@ let changeStatus = async (req, res, next) => {
 module.exports = {
     create,
     listAdminSide,
-    listCustomer,
+    listCustomerSide,
+    detailCustomerSide,
     changeStatus
 }
