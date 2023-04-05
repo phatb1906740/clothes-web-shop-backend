@@ -53,7 +53,7 @@ let create = async (req, res, next) => {
                 include: [
                     {
                         model: Product, attributes: ['product_id'],
-                        include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['createdAt', 'DESC']] }
+                        include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['created_at', 'DESC']] }
                     },
                 ],
                 where: { product_variant_id: order_item.product_variant_id }

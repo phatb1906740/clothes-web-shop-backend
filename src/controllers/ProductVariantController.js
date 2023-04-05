@@ -121,7 +121,7 @@ let detailCustomerSide = async (req, res, next) => {
             include: [
                 {
                     model: Product, attributes: ['product_id'],
-                    include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['createdAt', 'DESC']] }
+                    include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['created_at', 'DESC']] }
                 },
                 { model: Product_Image, attributes: ['path'] },
             ],

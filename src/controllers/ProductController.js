@@ -6,6 +6,7 @@ const Colour = require('../models/colour');
 const Size = require('../models/size');
 const Product_Price_History = require('../models/product_price_history');
 const Product_Image = require('../models/product_image');
+const Category = require("../models/category");
 
 let create = async (req, res, next) => {
     let product_name = req.body.product_name;
@@ -30,13 +31,40 @@ let create = async (req, res, next) => {
     }
 }
 
+let update = async (req, res, next) => {
+    let product_id = req.body.product_id;
+    if (product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+    let product_name = req.body.product_name;
+    if (product_name === undefined) return res.status(400).send('Trường product_name không tồn tại');
+    let category_id = req.body.category_id;
+    if (category_id === undefined) return res.status(400).send('Trường category_id không tồn tại');
+    let price = parseInt(req.body.price);
+    if (price === undefined) return res.status(400).send('Trường price không tồn tại');
+    let description = req.body.description;
+    if (description === undefined) return res.status(400).send('Trường description không tồn tại');
+    try {
+        let category = await Category.findOne({ where: { category_id } });
+        if (category == null) return res.status(400).send('Danh mục này không tồn tại');
+        let product = await Product.findOne({ where: { product_id } });
+        if (product == null) return res.status(400).send('Sản phẩm này không tồn tại');
+
+        await Product_Price_History.create({ product_id, price })
+        await product.update({ product_name, category_id, description })
+
+        return res.send("Success")
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tạo đơn hàng vui lòng thử lại');
+    }
+}
+
 let listAdminSide = async (req, res, next) => {
     let listProductVariant = await Product_Variant.findAll({
         attributes: ['product_variant_id', 'quantity', 'state', 'created_at'],
         include: [
             {
                 model: Product, attributes: ['product_id', 'product_name'],
-                include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['createdAt', 'DESC']] }
+                include: { model: Product_Price_History, attributes: ['price'], separate: true, order: [['created_at', 'DESC']] }
             },
             { model: Colour, attributes: ['colour_name'] },
             { model: Size, attributes: ['size_name'] },
@@ -93,7 +121,7 @@ let listCustomerSide = async (req, res, next) => {
                             include: {
                                 model: Product_Price_History,
                                 attributes: ['price'],
-                                separate: true, order: [['createdAt', 'DESC']]
+                                separate: true, order: [['created_at', 'DESC']]
                             }
                         },
                         { model: Colour, attributes: ['colour_name'] },
@@ -147,6 +175,52 @@ let detailCustomerSide = async (req, res, next) => {
             where: { product_id },
             raw: true
         });
+        return res.send(productDetail);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
+}
+
+let detailAdminSide = async (req, res, next) => {
+    let product_id = req.params.product_id;
+    if (product_id === undefined) return res.status(400).send('Trường product_id không tồn tại');
+
+    try {
+        let productDetail = await Product.findOne({
+            attributes: ['product_id', 'product_name', 'category_id', 'description'],
+            include: [
+                { model: Product_Price_History, attributes: ['price'], separate: true, order: [['created_at', 'DESC']] },
+                {
+                    model: Product_Variant, attributes: ['product_variant_id', 'colour_id', 'size_id'],
+                    include: [
+                        { model: Colour, attributes: ['colour_name'] },
+                        { model: Size, attributes: ['size_name'] },
+                        { model: Product_Image, attributes: ['path'] }
+                    ]
+                }
+            ],
+            where: { product_id },
+        });
+
+        let productVariantList = productDetail.product_variants.map((productVariant) => {
+            let productImages = productVariant.Product_Images.map(({ path }) => { return { path } })
+            return {
+                product_variant_id: productVariant.product_variant_id,
+                colour_id: productVariant.colour_id,
+                colour_name: productVariant.Colour.colour_name,
+                size_id: productVariant.size_id,
+                size_name: productVariant.Size.size_name,
+                product_images: productImages
+            }
+        })
+        productDetail = {
+            product_id: productDetail.product_id,
+            category_id: productDetail.category_id,
+            price: productDetail.Product_Price_Histories[0].price,
+            description: productDetail.description,
+            productVariantList
+        }
         return res.send(productDetail);
     } catch (err) {
         console.log(err);
@@ -215,9 +289,11 @@ let listSize = async (req, res, next) => {
 
 module.exports = {
     create,
+    update,
     listAdminSide,
     listCustomerSide,
     detailCustomerSide,
+    detailAdminSide,
     listColour,
     listSize
 };
