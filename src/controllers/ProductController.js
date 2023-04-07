@@ -190,9 +190,10 @@ let detailAdminSide = async (req, res, next) => {
         let productDetail = await Product.findOne({
             attributes: ['product_id', 'product_name', 'category_id', 'description'],
             include: [
+                { model: Category, attributes: ['title'] },
                 { model: Product_Price_History, attributes: ['price'], separate: true, order: [['created_at', 'DESC']] },
                 {
-                    model: Product_Variant, attributes: ['product_variant_id', 'colour_id', 'size_id'],
+                    model: Product_Variant, attributes: ['product_variant_id', 'colour_id', 'size_id', 'quantity'],
                     include: [
                         { model: Colour, attributes: ['colour_name'] },
                         { model: Size, attributes: ['size_name'] },
@@ -203,25 +204,32 @@ let detailAdminSide = async (req, res, next) => {
             where: { product_id },
         });
 
-        let productVariantList = productDetail.product_variants.map((productVariant) => {
-            let productImages = productVariant.Product_Images.map(({ path }) => { return { path } })
-            return {
-                product_variant_id: productVariant.product_variant_id,
-                colour_id: productVariant.colour_id,
-                colour_name: productVariant.Colour.colour_name,
-                size_id: productVariant.size_id,
-                size_name: productVariant.Size.size_name,
-                product_images: productImages
+        if (productDetail) {
+            let productVariantList = productDetail.product_variants.map((productVariant) => {
+                let productImages = productVariant.Product_Images.map(({ path }) => { return { path } })
+                return {
+                    product_variant_id: productVariant.product_variant_id,
+                    colour_id: productVariant.colour_id,
+                    colour_name: productVariant.Colour.colour_name,
+                    size_id: productVariant.size_id,
+                    size_name: productVariant.Size.size_name,
+                    quantity: productVariant.quantity,
+                    product_images: productImages
+                }
+            })
+            productDetail = {
+                product_id: productDetail.product_id,
+                product_name: productDetail.product_name,
+                category_id: productDetail.category_id,
+                category_name: productDetail.Category.title,
+                price: productDetail.Product_Price_Histories[0].price,
+                description: productDetail.description,
+                product_variant_list: productVariantList
             }
-        })
-        productDetail = {
-            product_id: productDetail.product_id,
-            category_id: productDetail.category_id,
-            price: productDetail.Product_Price_Histories[0].price,
-            description: productDetail.description,
-            productVariantList
+            return res.send(productDetail);
+        } else {
+            return res.status(400).send('Biến thể sản phẩm này không tồn tại');
         }
-        return res.send(productDetail);
     } catch (err) {
         console.log(err);
         return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');

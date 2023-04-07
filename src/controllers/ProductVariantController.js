@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 const Product = require('../models/product');
 const Product_Variant = require('../models/product_variant');
 const Product_Image = require('../models/product_image');
@@ -31,7 +33,7 @@ let create = async (req, res, next) => {
             let newProductVariant = await Product_Variant.create(data);
             for (let file of files) {
                 let data = {
-                    path: 'http://localhost:8080\\static' + file.path.slice(10, 60),
+                    path: 'http://localhost:8080/static/images' + file.path.slice(-40, file.path.length),
                     product_variant_id: newProductVariant.product_variant_id
                 }
                 let newProductImage = await Product_Image.create(data);
@@ -39,72 +41,131 @@ let create = async (req, res, next) => {
             return res.send(newProductVariant)
         } catch (err) {
             console.log(err);
-            return res.status(500).send(e);
+            return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+        }
+    })
+}
+
+let update = async (req, res, next) => {
+    uploadImage(req, res, async (err) => {
+        if (err) {
+            console.log(err);
+            return res.status(400).send(err);
+        }
+        let product_variant_id = parseInt(req.body.product_variant_id);
+        if (product_variant_id === undefined) return res.status(400).send('Trường product_variant_id không tồn tại');
+        let quantity = parseInt(req.body.quantity);
+        if (quantity === undefined) return res.status(400).send('Trường quantity không tồn tại');
+        let files = req.files;
+        if (files === undefined) return res.status(400).send('Trường files không tồn tại');
+
+        try {
+            let productVariant = await Product_Variant.findOne({
+                where: { product_variant_id },
+                include: { model: Product_Image, attributes: ['image_id', 'path'] }
+            });
+            if (!productVariant) return res.status(400).send('Product Variant này không tồn tại');
+
+            for (let file of files) {
+                fileName = file.path.slice(-40, file.path.length)
+                let path = 'http://localhost:8080/static/images/' + fileName
+                await Product_Image.create({
+                    path,
+                    product_variant_id
+                });
+            }
+
+            for (let { image_id, path } of productVariant.Product_Images) {
+                let directoryPath = __basedir + '\\public\\images\\'
+                let fileName = path.slice(-40, path.length)
+                fs.unlinkSync(directoryPath + fileName)
+                await Product_Image.destroy({ where: { image_id } })
+            }
+
+            await productVariant.update({ quantity })
+
+            return res.send({ message: "Cập nhật biến thể sản phẩm thành công!" })
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
         }
     })
 }
 
 let onState = async (req, res, next) => {
-    let product_variant_ids = req.body.product_variant_ids;
-    if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
-    let numberProductVariantUpdated = await Product_Variant.update(
-        { state: true },
-        { where: { product_variant_id: product_variant_ids } }
-    )
-    return res.send(numberProductVariantUpdated)
+    try {
+        let product_variant_ids = req.body.product_variant_ids;
+        if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+        await Product_Variant.update(
+            { state: true },
+            { where: { product_variant_id: product_variant_ids } }
+        )
+        return res.send({ message: 'Mở bán biến thể sản phẩm thành công!' })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
 }
 
 let offState = async (req, res, next) => {
-    let product_variant_ids = req.body.product_variant_ids;
-    if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
-    let numberProductVariantUpdated = await Product_Variant.update(
-        { state: false },
-        { where: { product_variant_id: product_variant_ids } }
-    )
-    return res.send(numberProductVariantUpdated)
-}
-
-let updatePrice = async (req, res, next) => {
-    let product_variant_ids = req.body.product_variant_ids;
-    if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
-    let newPrice = req.body.price;
-    if (newPrice === undefined) return res.status(400).send('Trường price không tồn tại');
-
     try {
-        for (let product_variant_id of product_variant_ids) {
-            let newProductVariantHistory = await Product_Variant_History.create({
-                product_variant_id,
-                price: newPrice
-            });
-        }
-    } catch (e) {
-        console.log(e)
-        return res.state(500).send('Có lỗi khi cập nhật giá sản phẩm vui lòng thử lại!')
+        let product_variant_ids = req.body.product_variant_ids;
+        if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+        Product_Variant.update(
+            { state: false },
+            { where: { product_variant_id: product_variant_ids } }
+        )
+        return res.send({ message: 'Tắt biến thể sản phẩm thành công!' })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
     }
-    return res.send('updatePrice')
 }
 
 let updateQuantity = async (req, res, next) => {
-    let product_variant_ids = req.body.product_variant_ids;
-    if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
-    let newQuantity = req.body.quantity;
-    if (newQuantity === undefined) return res.status(400).send('Trường quantity không tồn tại');
+    try {
+        let product_variant_ids = req.body.product_variant_ids;
+        if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
+        let newQuantity = req.body.quantity;
+        if (newQuantity === undefined) return res.status(400).send('Trường quantity không tồn tại');
 
-    let numberProductVariantUpdated = await Product_Variant.update(
-        { quantity: newQuantity },
-        { where: { product_variant_id: product_variant_ids } }
-    )
-    return res.send(numberProductVariantUpdated)
+        await Product_Variant.update(
+            { quantity: newQuantity },
+            { where: { product_variant_id: product_variant_ids } }
+        )
+        return res.send({ message: 'Cập nhật tồn kho cho biến thể sản phẩm thành công!' })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
 }
 
 let deleteProductVariant = async (req, res, next) => {
     let product_variant_ids = req.body.product_variant_ids;
-    console.log(product_variant_ids)
     if (product_variant_ids === undefined) return res.status(400).send('Trường product_variant_ids không tồn tại');
-    await Product_Variant.destroy(
-        { where: { product_variant_id: product_variant_ids } }
-    )
-    return res.send('delete product variant success')
+
+
+    try {
+        let productVariant
+        for (let product_variant_id of product_variant_ids) {
+            productVariant = await Product_Variant.findOne({ where: { product_variant_id } });
+            if (!productVariant) return res.status(400).send('Product Variant này không tồn tại');
+        }
+
+        await Product_Variant.destroy(
+            { where: { product_variant_id: product_variant_ids } }
+        )
+
+        let product_id = productVariant.product_id
+        let product = await Product.findOne({ where: { product_id } })
+        let count = await product.countProduct_variants()
+        if (count == 0) await product.destroy()
+
+        return res.send({ message: 'Xóa biến thể sản phẩm thành công' })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
 }
 
 let detailCustomerSide = async (req, res, next) => {
@@ -148,9 +209,9 @@ let detailCustomerSide = async (req, res, next) => {
 
 module.exports = {
     create,
+    update,
     onState,
     offState,
-    updatePrice,
     updateQuantity,
     deleteProductVariant,
     detailCustomerSide

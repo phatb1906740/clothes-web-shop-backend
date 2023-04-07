@@ -72,6 +72,7 @@ let list = async (req, res, next) => {
                 return {
                     category_id: category.category_id,
                     title: category.title,
+                    level: category.level,
                     parent: parent.title
                 }
             }
@@ -79,6 +80,7 @@ let list = async (req, res, next) => {
                 return {
                     category_id: category.category_id,
                     title: category.title,
+                    level: category.level,
                     parent: null
                 }
             }

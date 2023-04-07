@@ -162,6 +162,15 @@ let listCustomerSide = async (req, res, next) => {
                 let productImages = await productVariant.getProduct_Images();
                 let colour = await productVariant.getColour();
                 let size = await productVariant.getSize();
+
+                let feedback = await Feedback.findOne({
+                    where: {
+                        user_id: customer_id,
+                        product_variant_id: productVariant.product_variant_id
+                    }
+                })
+                let hasFeedback = feedback != null
+
                 let productVariantConverted = {
                     product_variant_id: productVariant.product_variant_id,
                     name: product.product_name,
@@ -170,6 +179,7 @@ let listCustomerSide = async (req, res, next) => {
                     colour: colour.colour_name,
                     size: size.size_name,
                     price: productVariant.Order_Item.price,
+                    hasFeedback
                 }
                 orderItemList.push(productVariantConverted);
             }

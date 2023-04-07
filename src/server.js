@@ -6,11 +6,12 @@ const setRouter = require('./routes/index');
 
 const server = express();
 const port = 8080;
+global.__basedir = __dirname;
 
-server.use('/static', express.static('./src/public'));
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
 server.use(cors());
+server.use('/static', express.static('./src/public'));
 
 setRouter(server);
 
