@@ -1,4 +1,4 @@
-const multer  = require('multer');
+const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 
 const storage = multer.diskStorage({
@@ -6,14 +6,19 @@ const storage = multer.diskStorage({
         cb(null, './src/public/images');
     },
     filename: function (req, file, cb) {
-        const { originalname } = file;
-        const fileExtension = (originalname.match(/\.+[\S]+$/) || [])[0];
-        const uniqueSuffix = uuidv4();
+        let { originalname } = file;
+        let fileExtension
+        if (file.mimetype == "image/png") {
+            fileExtension = '.png'
+        } else if (file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            fileExtension = '.jpg'
+        }
+        let uniqueSuffix = uuidv4();
         cb(null, uniqueSuffix + fileExtension);
     }
 })
-  
-const upload = multer({ 
+
+const upload = multer({
     storage: storage,
     fileFilter: (req, file, cb) => {
         if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
