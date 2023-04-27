@@ -12,6 +12,8 @@ router.get('/customer/list/:customer_id', OrderController.listCustomerSide);
 
 router.get('/detail/:customer_id/:order_id', OrderController.detailCustomerSide);
 
+router.get('/admin/detail/:order_id', OrderController.detailAdminSide);
+
 router.put('/change-status/:order_id/:state_id', OrderController.changeStatus);
 
 module.exports = router;

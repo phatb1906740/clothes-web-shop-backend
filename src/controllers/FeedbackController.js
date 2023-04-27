@@ -136,12 +136,19 @@ let update = async (req, res, next) => {
 }
 
 let detail = async (req, res, next) => {
-    let feedback_id = req.params.feedback_id;
-    if (feedback_id === undefined) return res.status(400).send('Trường feedback_id không tồn tại');
+    let customer_id = req.params.customer_id;
+    if (customer_id === undefined) return res.status(400).send('Trường customer_id không tồn tại');
+    let product_variant_id = req.params.product_variant_id;
+    if (product_variant_id === undefined) return res.status(400).send('Trường product_variant_id không tồn tại');
     try {
+        let customer = await User.findOne({ where: { user_id: customer_id, role_id: 2 } });
+        if (customer == null) return res.status(400).send('Customer này không tồn tại');
+        let productVariant = await Product_Variant.findOne({ where: { product_variant_id } });
+        if (productVariant == null) return res.status(400).send('Product Variant này không tồn tại');
+
         let feedback = await Feedback.findOne({
             attributes: ['feedback_id', 'rate', 'content'],
-            where: { feedback_id }
+            where: { user_id: customer_id, product_variant_id }
         })
         if (!feedback) res.status(400).send('Feedback này không tồn tại');
         else return res.send(feedback)

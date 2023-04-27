@@ -91,7 +91,14 @@ let listAdminSide = async (req, res, next) => {
 }
 
 let listCustomerSide = async (req, res, next) => {
+    let category_id = Number(req.query.category);
+    let whereClause;
+    if (category_id != undefined && Number.isInteger(category_id))
+        whereClause = { category_id }
+
     try {
+
+
         // Lấy danh sách tất cả sản phẩm ưu tiên sản phẩm mới nhất
         let listProduct = await Product.findAll({
             attributes: ['product_id'],
@@ -122,7 +129,8 @@ let listCustomerSide = async (req, res, next) => {
                                 model: Product_Price_History,
                                 attributes: ['price'],
                                 separate: true, order: [['created_at', 'DESC']]
-                            }
+                            },
+                            where: whereClause
                         },
                         { model: Colour, attributes: ['colour_name'] },
                         { model: Size, attributes: ['size_name'] },

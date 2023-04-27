@@ -179,7 +179,7 @@ let listCustomerSide = async (req, res, next) => {
                     colour: colour.colour_name,
                     size: size.size_name,
                     price: productVariant.Order_Item.price,
-                    hasFeedback
+                    has_feedback: hasFeedback
                 }
                 orderItemList.push(productVariantConverted);
             }
@@ -267,6 +267,64 @@ let detailCustomerSide = async (req, res, next) => {
     }
 
     return res.send(orderConverted);
+}
+
+let detailAdminSide = async (req, res, next) => {
+    let order_id = req.params.order_id;
+    if (order_id === undefined) return res.status(400).send('Trường order_id không tồn tại');
+
+    try {
+        let order = await Order.findOne({ where: { order_id } });
+        if (order == null) return res.status(400).send('Order này không tồn tại');
+
+        let stateList = await order.getOrder_States()
+        let orderHistories = stateList.map((state) => {
+            return {
+                state_name: state.state_name,
+                created_at: state.Order_Status_Change_History.created_at
+            }
+        });
+        let created_at = stateList[0].Order_Status_Change_History.created_at
+        let state = stateList.pop()
+
+        let productVariantList = await order.getProduct_variants();
+        let orderItemList = [];
+        for (let productVariant of productVariantList) {
+            let product = await productVariant.getProduct();
+            let colour = await productVariant.getColour();
+            let size = await productVariant.getSize();
+            let productVariantConverted = {
+                name: product.product_name,
+                quantity: productVariant.Order_Item.quantity,
+                price: productVariant.Order_Item.price,
+                colour: colour.colour_name,
+                size: size.size_name,
+                total_value: productVariant.Order_Item.total_value
+            }
+            orderItemList.push(productVariantConverted);
+        }
+
+        let orderConverted = {
+            order_id: order.order_id,
+            state_id: state.state_id,
+            state_name: state.state_name,
+            created_at,
+            order_items: orderItemList,
+            total_product_value: order.total_product_value,
+            delivery_charges: order.delivery_charges,
+            total_order_value: order.total_order_value,
+            order_histories: orderHistories,
+            customer_name: order.customer_name,
+            email: order.email,
+            phone_number: order.phone_number,
+            address: order.address
+        }
+
+        return res.send(orderConverted);
+    } catch (err) {
+        console.log(err);
+        return res.status(500).send('Gặp lỗi khi tải dữ liệu vui lòng thử lại');
+    }
 }
 
 let changeStatus = async (req, res, next) => {
@@ -368,5 +426,6 @@ module.exports = {
     listAdminSide,
     listCustomerSide,
     detailCustomerSide,
+    detailAdminSide,
     changeStatus
 }

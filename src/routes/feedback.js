@@ -6,7 +6,7 @@ let router = express.Router();
 
 router.get('/list/:product_id', FeedbackController.list);
 
-router.get('/detail/:feedback_id', FeedbackController.detail);
+router.get('/detail/:customer_id/:product_variant_id', FeedbackController.detail);
 
 router.post('/create', FeedbackController.create);
 
