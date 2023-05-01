@@ -87,7 +87,15 @@ let update = async (req, res, next) => {
             { customer_name, phone_number, address },
             { where: { user_id } }
         )
-        return res.send(numberUpdate);
+        if (numberUpdate) {
+            return res.send({
+                customer_name,
+                phone_number,
+                address
+            });
+        } else {
+            return res.status(400).send("Có lỗi trong quá trình cập nhật vui lòng thử lại");
+        }
     } catch (err) {
         console.log(err);
         return res.status(400).send("Có lỗi trong quá trình cập nhật vui lòng thử lại");
