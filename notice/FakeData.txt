@@ -1,6 +1,3 @@
-INSERT INTO `roles` (`role_id`, `role_name`) VALUES (NULL, 'admin');
-INSERT INTO `roles` (`role_id`, `role_name`) VALUES (NULL, 'customer');
-
 INSERT INTO `users` (`user_id`, `email`, `password`, `role_id`) VALUES
 ('14f40b93-5f1e-459f-b2ea-fa72ce724fc8', 'hung@gmail.com', '$2b$10$oC7gN6VwK1kEEWAgKApuTOinjTHqf/OSysOhU96nEwhS.8BBx37VO', 2),
 ('1ca2f9f9-6f0a-4bb1-b404-bfca5d900c6c', 'minh@gmail.com', '$2b$10$wbiTajwynughf0pBJv97b.tByg4SVWDIstXZXttKyHLmIRYB275lC', 2),
@@ -154,13 +151,6 @@ INSERT INTO `product_images` (`image_id`, `path`, `product_variant_id`) VALUES
 (64, 'http://localhost:8080/static/images/24b871e5-7ec2-4a0d-834b-dd524cfb8a76.jpg', 22),
 (65, 'http://localhost:8080/static/images/6a2ba58c-8909-4f2f-a16c-3dcc9cf29cb2.jpg', 22),
 (66, 'http://localhost:8080/static/images/3feebfb3-dd80-44ad-9e4c-c9556c1bff2b.jpg', 22);
-
-INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('1','Chờ Xác Nhận');
-INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('2','Đã Xác Nhận');
-INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('3','Đang Vận Chuyển');
-INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('4','Đã Giao');
-INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('5','Đã Hủy');
-INSERT INTO `order_states`(`state_id`, `state_name`) VALUES ('6','Hủy Bởi Shop');
 
 INSERT INTO `orders` (`order_id`, `customer_name`, `email`, `phone_number`, `address`, `total_product_value`, `delivery_charges`, `total_order_value`, `user_id`) VALUES
 ('71828451735555', 'Vương Trung Tín', 'tin@gmail.com', '0932528331', '51A9 Đường Trần Nam Phú, Phường An Khánh, Quận Ninh Kiều, Thành Phố Cần Thơ', 957000, 20000, 977000, 'e1e3af7e-5ea7-4f6d-b488-0feb60d8e5c0'),

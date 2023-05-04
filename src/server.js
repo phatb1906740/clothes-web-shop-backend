@@ -3,6 +3,7 @@ const cors = require('cors');
 
 const db = require('./configs/database');
 const setRouter = require('./routes/index');
+const { createRecordsDefault } = require('./configs/createRecordsDefault');
 
 const server = express();
 const port = 8080;
@@ -15,7 +16,10 @@ server.use('/static', express.static('./src/public'));
 
 setRouter(server);
 
-db.connect();
+(async () => {
+  await db.connect();
+  await createRecordsDefault();
+})()
 
 server.listen(port, () => {
   console.log(`Server listening on port ${port}`);
